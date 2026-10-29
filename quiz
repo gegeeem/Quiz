@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mini kviz iz Muzičke kulture</title>
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--ink:#1d2340;--mute:#5b6283;--line:#d5d9ea;--acc:#3b4cca;--ok:#1f7a4d;--okbg:#e3f4ea;--bad:#b3261e;--badbg:#fbe7e5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12152a;--card:#1b1f3a;--ink:#e8eaf8;--mute:#a1a7c8;--line:#333961;--acc:#8c98ff;--ok:#6fd49b;--okbg:#17342a;--bad:#ff8f86;--badbg:#3b1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12152a;--card:#1b1f3a;--ink:#e8eaf8;--mute:#a1a7c8;--line:#333961;--acc:#8c98ff;--ok:#6fd49b;--okbg:#17342a;--bad:#ff8f86;--badbg:#3b1f22;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 56px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 24px;font-size:.95rem}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 18px 14px;margin-bottom:16px}
+.q h2{font-size:1.05rem;line-height:1.4;margin:0 0 4px;font-weight:700}
+.hint{color:var(--mute);font-size:.88rem;margin:0 0 10px;font-style:italic}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;margin:6px 0;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt input{margin-top:5px;accent-color:var(--acc);flex:none}
+.opt:focus-within{outline:2px solid var(--acc);outline-offset:1px}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt.miss{border-style:dashed;border-color:var(--ok)}
+.exp{display:none;margin:10px 0 2px;font-size:.93rem;color:var(--mute)}
+.q.done .exp{display:block}
+.verdict{font-weight:700}
+.verdict.ok{color:var(--ok)}.verdict.bad{color:var(--bad)}
+.dl{margin:6px 0 12px;padding:0;list-style:none}.dl li{margin:4px 0}.dl b{color:var(--acc)}
+.mrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:9px 10px;margin:6px 0;border:1px solid var(--line);border-radius:8px}
+.mrow .lbl{flex:1 1 200px}
+.ml{display:inline-flex;gap:5px;align-items:center;cursor:pointer;padding:2px 6px}
+.ml input{accent-color:var(--acc)}
+.ml:focus-within{outline:2px solid var(--acc);outline-offset:1px;border-radius:4px}
+.mrow.ok{background:var(--okbg);border-color:var(--ok)}.mrow.bad{background:var(--badbg);border-color:var(--bad)}
+.ans{font-size:.88rem;color:var(--mute);width:100%}
+.q h2,.opt span{overflow-wrap:break-word;min-width:0}
+.opt:has(input:checked),.ml:has(input:checked){border-color:var(--acc)}
+@media (max-width:520px){
+body{font-size:16px}
+main{padding:18px 12px 40px}
+h1{font-size:1.4rem}
+.sub{font-size:.9rem}
+.q{padding:14px 12px 10px}
+.opt{padding:12px 10px}
+.opt input{width:20px;height:20px;margin-top:2px}
+.mrow .lbl{flex:1 1 100%;font-weight:700}
+.ml{flex:1 1 0;justify-content:center;min-height:44px;border:1px solid var(--line);border-radius:8px;gap:8px}
+.ml input{width:18px;height:18px}
+button{width:100%;padding:14px}
+button.alt{margin:10px 0 0}
+}
+button{font:inherit;font-weight:700;background:var(--acc);color:#fff;border:0;border-radius:8px;padding:12px 22px;cursor:pointer}
+:root[data-theme="dark"] button{color:#12152a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button{color:#12152a}}
+button.alt{background:transparent;color:var(--acc);border:1px solid var(--acc);margin-left:8px}
+#score{display:none;margin:18px 0;padding:16px 18px;border-radius:10px;background:var(--card);border:2px solid var(--acc);font-size:1.15rem;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1>Mini kviz iz Muzičke kulture</h1>
+<p class="sub">Muzika u prahistoriji i staroj Grčkoj · Svatovske pjesme u tradicionalnoj muzici Bošnjaka. Kod pitanja s kvadratićima označi sve tačne odgovore.</p>
+<div id="quiz"></div>
+<div id="score" role="status"></div>
+<button id="check">Provjeri odgovore</button><button id="reset" class="alt" style="display:none">Pokušaj ponovo</button>
+</main>
+<script>
+var Q=[
+{t:"Porijeklo muzike u prahistoriji povezivalo se sa:",o:["magijom","sportskim takmičenjima","pisanjem knjiga"],c:[0],e:"U prahistoriji se muzika vezivala za magiju i obrede."},
+{t:"Poređaj načine muziciranja u prahistoriji od najranijeg (1) do kasnijeg (4). Koji niz rednih brojeva je tačan?",o:["glas = 1, udarački = 2, duvački = 3, žičani = 4","glas = 2, udarački = 1, duvački = 3, žičani = 4","glas = 1, udarački = 2, duvački = 4, žičani = 3","glas = 4, udarački = 3, duvački = 2, žičani = 1"],c:[0],e:"Redoslijed: 1 – sopstveni glas, 2 – udarački, 3 – duvački, 4 – žičani instrumenti."},
+{t:"Dopuni rečenice koristeći izraze: od kostiju životinja ili trske; luk i strijela.\na) Rani duvački instrumenti mogli su biti napravljeni ______.\nb) Rani žičani instrumenti mogli su nastati po uzoru na ______.",o:["a) od kostiju životinja ili trske; b) luk i strijelu","a) luk i strijelu; b) od kostiju životinja ili trske","a) od kostiju životinja ili trske; b) koplje i štit","a) od gline i voska; b) luk i strijelu"],c:[0],e:"Duvački instrumenti su pravljeni od kostiju životinja ili trske, a žičani su nastali po uzoru na luk i strijelu."},
+{t:"Vladari i bogati slojevi u starim civilizacijama imali su ___ muziku, a narod ___ muziku.",o:["narodnu / dvorsku","dvorsku / narodnu","crkvenu / vojnu"],c:[1],e:"Vladari i bogati imali su dvorsku, a narod narodnu muziku."},
+{t:"Označi sve civilizacije u kojima se razvijala muzika u starom vijeku.",m:1,o:["Kina","Mesopotamija","Francuska","Egipat","Indija","antička Grčka","Rimsko carstvo"],c:[0,1,3,4,5,6],e:"Muzika se razvijala u Kini, Mesopotamiji, Egiptu, Indiji, antičkoj Grčkoj i Rimskom carstvu. Francuska nije tačan odgovor."},
+{t:"Koji je opis tačan za instrumente antičke Grčke?",o:["Lira je duvački, a aulos žičani instrument","Lira je žičani instrument koji se svira trzajem žica, a aulos je duvački","Oba su udarački instrumenti"],c:[1],e:"Lira je žičani instrument, a aulos je duvački instrument."},
+{t:"Koje su dvije poznate vrste pozorišnih predstava izvođene uz muziku u antičkoj Grčkoj?",o:["opera i balet","tragedija i komedija","mjuzikl i pantomima"],c:[1],e:"U antičkim pozorištima izvodile su se tragedije i komedije uz muziku."},
+{t:"Poveži vrste svatovskih pjesama sa opisom.\nSvatovske pjesme Bošnjaka koje su se izvodile širom Pešterskih sela razvrstavaju se na pjesme koje se pjevaju:",x:{rows:["u mladoženjinoj kući","u djevojčinoj kući","putem","u mladoženjinoj kući"],d:["prije odlaska svatova","priprema djevojke, doček svatova, oproštaj od nevjeste","prema djevojčinoj kući i na povratku u mladoženjinu kuću","kada se djevojka dovede"],c:[0,1,2,3]},o:[],c:[],e:"A – u mladoženjinoj kući (prije odlaska svatova); B – u djevojčinoj kući (priprema djevojke, doček svatova, oproštaj od nevjeste); C – putem (prema djevojčinoj kući i na povratku); D – u mladoženjinoj kući (kada se djevojka dovede)."},
+{t:"Dopuni stih pjesme „Trepetljika trepetala“: „Aj, oni naši bijeli dvori puni ______!“",o:["veselja","bisera","svatova"],c:[0],e:"Stih glasi: „Aj, oni naši bijeli dvori puni veselja!“"},
+{t:"Dopuni stih pjesme „Trepetljika trepetala“: „Aj, ono majka ______ ženi, pa se vesele.“",o:["kćer","sina","brata"],c:[1],e:"Stih glasi: „Aj, ono majka sina ženi, pa se vesele.“"}
+];
+var box=document.getElementById("quiz");
+function build(){
+ box.innerHTML="";
+ Q.forEach(function(q,i){
+  var d=document.createElement("section");d.className="q";
+  var h=document.createElement("h2");h.textContent=(i+1)+". "+q.t.split("\n")[0];d.appendChild(h);
+  q.t.split("\n").slice(1).forEach(function(l){var p=document.createElement("p");p.style.margin="2px 0";p.textContent=l;d.appendChild(p)});
+  if(q.m){var s=document.createElement("p");s.className="hint";s.textContent="Moguće je označiti više odgovora.";d.appendChild(s)}
+  q.o.forEach(function(t,j){
+   var l=document.createElement("label");l.className="opt";
+   var inp=document.createElement("input");inp.type=q.m?"checkbox":"radio";inp.name="q"+i;inp.value=j;
+   var sp=document.createElement("span");sp.textContent=t;
+   l.appendChild(inp);l.appendChild(sp);d.appendChild(l);
+  });
+  if(q.x){
+   var hp=document.createElement("p");hp.className="hint";hp.textContent="Uz svaku vrstu pjesama odaberi slovo odgovarajućeg opisa (A, B, C ili D).";d.appendChild(hp);
+   var ul=document.createElement("ul");ul.className="dl";
+   q.x.d.forEach(function(t,j){var li=document.createElement("li");var b=document.createElement("b");b.textContent="ABCD".charAt(j)+" – ";li.appendChild(b);li.appendChild(document.createTextNode(t));ul.appendChild(li)});
+   d.appendChild(ul);
+   q.x.rows.forEach(function(rt,k){
+    var r=document.createElement("div");r.className="mrow";
+    var lb=document.createElement("span");lb.className="lbl";lb.textContent=rt;r.appendChild(lb);
+    for(var j=0;j<4;j++){var l=document.createElement("label");l.className="ml";var inp=document.createElement("input");inp.type="radio";inp.name="q"+i+"r"+k;inp.value=j;l.appendChild(inp);l.appendChild(document.createTextNode("ABCD".charAt(j)));r.appendChild(l)}
+    var an=document.createElement("span");an.className="ans";r.appendChild(an);
+    d.appendChild(r);
+   });
+  }
+  var e=document.createElement("p");e.className="exp";d.appendChild(e);
+  box.appendChild(d);
+ });
+}
+function check(){
+ var total=0,secs=box.children;
+ Q.forEach(function(q,i){
+  var sec=secs[i];
+  if(q.x){
+   var all=true;
+   sec.querySelectorAll(".mrow").forEach(function(r,k){
+    var pick=-1;
+    r.querySelectorAll("input").forEach(function(x,j){if(x.checked)pick=j;x.disabled=true});
+    var ok=pick===q.x.c[k];if(!ok)all=false;
+    r.classList.add(ok?"ok":"bad");
+    r.querySelector(".ans").textContent=ok?"":"Tačan odgovor: "+"ABCD".charAt(q.x.c[k]);
+   });
+   if(all)total++;
+   var e0=sec.querySelector(".exp");e0.innerHTML="";
+   var v0=document.createElement("span");v0.className="verdict "+(all?"ok":"bad");v0.textContent=all?"Tačno. ":"Netačno. ";
+   e0.appendChild(v0);e0.appendChild(document.createTextNode(q.e));
+   sec.classList.add("done");return;
+  }
+  var ins=sec.querySelectorAll("input"),sel=[];
+  ins.forEach(function(x,j){if(x.checked)sel.push(j)});
+  var right=sel.length===q.c.length&&sel.every(function(v){return q.c.indexOf(v)>-1});
+  if(right)total++;
+  ins.forEach(function(x,j){
+   var l=x.parentNode,isC=q.c.indexOf(j)>-1;
+   l.classList.remove("ok","bad","miss");
+   if(x.checked&&isC)l.classList.add("ok");
+   else if(x.checked&&!isC)l.classList.add("bad");
+   else if(isC)l.classList.add("miss");
+   x.disabled=true;
+  });
+  var e=sec.querySelector(".exp");e.innerHTML="";
+  var v=document.createElement("span");v.className="verdict "+(right?"ok":"bad");v.textContent=right?"Tačno. ":"Netačno. ";
+  e.appendChild(v);e.appendChild(document.createTextNode(q.e));
+  sec.classList.add("done");
+ });
+ var s=document.getElementById("score");s.style.display="block";
+ s.textContent="Rezultat: "+total+" / "+Q.length;
+ document.getElementById("check").style.display="none";
+ document.getElementById("reset").style.display="inline-block";
+ s.scrollIntoView({behavior:"smooth",block:"center"});
+}
+document.getElementById("check").onclick=check;
+document.getElementById("reset").onclick=function(){
+ build();document.getElementById("score").style.display="none";
+ this.style.display="none";document.getElementById("check").style.display="inline-block";
+ window.scrollTo({top:0,behavior:"smooth"});
+};
+build();
+</script>
+</body>
+</html>
